@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Tracker</title>
+</head>
+<body>
+    <h2>Job Entry Form</h2>
+    <form id="jobForm">
+        <label>Job Name:</label><br>
+        <input type="text" id="jobName" required><br><br>
+        
+        <label>Job Link:</label><br>
+        <input type="url" id="jobLink" required><br><br>
+        
+        <label>Relevant For:</label><br>
+        <input type="checkbox" id="avinash"> Avinash<br>
+        <input type="checkbox" id="vartika"> Vartika<br><br>
+        
+        <button type="submit">Add Job</button>
+    </form>
+
+    <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwc6Q8yjPVleOEHrdhcH5oHMrebCDeSv_Xfr5LykcLQ_x1omrHNAEGuW0yYcQ77QtT54g/exec";
+
+        document.getElementById('jobForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const data = {
+                jobName: document.getElementById('jobName').value,
+                jobLink: document.getElementById('jobLink').value,
+                avinash: document.getElementById('avinash').checked,
+                vartika: document.getElementById('vartika').checked
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                alert("Job entry added successfully!");
+                document.getElementById('jobForm').reset();
+            })
+            .catch(err => console.error("Error:", err));
+        });
+    </script>
+</body>
+</html>
