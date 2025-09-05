@@ -1,6 +1,4 @@
-// script.js
-
-const scriptURL = "https://script.google.com/macros/s/AKfycbwc6Q8yjPVleOEHrdhcH5oHMrebCDeSv_Xfr5LykcLQ_x1omrHNAEGuW0yYcQ77QtT54g/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxryV098DOvZgYds5iQewhSPJM6Jze4sg2nf1KHqbINzWRS6c9w4Eq4FV78jHhWhN9F0w/exec";
 
 const form = document.getElementById('jobForm');
 const alertBox = document.getElementById('alertBox');
@@ -14,14 +12,15 @@ function showAlert(message, type = 'success') {
   }, 3500);
 }
 
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const data = {
     jobName: form.jobName.value.trim(),
     jobLink: form.jobLink.value.trim(),
     avinash: form.avinash.checked,
-    vartika: form.vartika.checked
+    vartika: form.vartika.checked,
+    description: form.description ? form.description.value.trim() : ""
   };
 
   if (!data.jobName || !data.jobLink) {
@@ -29,18 +28,23 @@ form.addEventListener('submit', e => {
     return;
   }
 
-  fetch(scriptURL, {
-    method: 'POST',
-    mode: 'no-cors',  // Google Apps Script CORS limitation
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    showAlert("Job entry added successfully!");
-    form.reset();
-  })
-  .catch(err => {
+  try {
+    const response = await fetch(scriptURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      showAlert(result.message, "success");
+      form.reset();
+    } else {
+      showAlert(result.message || "Failed to add job.", "error");
+    }
+  } catch (err) {
     console.error(err);
-    showAlert("Failed to add job. Try again.", "error");
-  });
+    showAlert("Something went wrong. Try again.", "error");
+  }
 });
